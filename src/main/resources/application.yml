@@ -5,16 +5,18 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/fuzentrix_db
     username: fuzentrix
-    password: fuzentrix@pass
+    # Use DB_PASSWORD env var in production. Falls back to local dev value.
+    password: ${DB_PASSWORD:fuzentrix@pass}
     driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
       ddl-auto: none
-    show-sql: true
+    # SQL logging is off by default. Enable it in application-dev.yml via the 'dev' profile.
+    show-sql: false
+    open-in-view: false
     properties:
       hibernate:
-        format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
   flyway:
@@ -25,6 +27,26 @@ server:
 
 minio:
   url: http://localhost:9000
-  accessKey: minio
-  secretKey: minio123
+  # Use env vars in production. Fall back to local dev values.
+  accessKey: ${MINIO_ACCESS_KEY:minio}
+  secretKey: ${MINIO_SECRET_KEY:minio123}
   bucketName: fuzentrix
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:f4f3075f5d6b0d8cd0267a599e93444aef8e203a9059e22e61e1fd9d9807e81775b8b608dd0004a4b3456fbb546ac215de30613239afeb8459e6d4604bda202a}
+    expiration: 3600000
+    refresh-token:
+      expiration: 604800000
+  security:
+    cookie:
+      secure: false
+    cors:
+      allowed-origins: http://localhost:3000
+      allowed-methods: GET,POST,PUT,DELETE,OPTIONS
+  session:
+    cleanup:
+      # Set to 'true' (or env var APP_SESSION_CLEANUP_ENABLED=true) to enable the weekly scheduled purge.
+      scheduled:
+        enabled: false
+      cron: "0 0 2 * * SUN"

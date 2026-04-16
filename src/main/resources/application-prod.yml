@@ -1,0 +1,19 @@
+# Production profile — activate with: spring.profiles.active=prod
+# These settings override the base application.yml for production deployments.
+
+spring:
+  datasource:
+    # In production, NEVER use a fallback password. Fail fast if the environment variable is missing.
+    password: ${DB_PASSWORD}
+
+app:
+  jwt:
+    # Fail fast if JWT_SECRET is not set. No hardcoded fallback!
+    secret: ${JWT_SECRET}
+  security:
+    cookie:
+      # Enforce HTTPS for cookies in production
+      secure: true
+    cors:
+      # TODO: Change this to your actual production frontend URL
+      allowed-origins: https://your-production-app.com
